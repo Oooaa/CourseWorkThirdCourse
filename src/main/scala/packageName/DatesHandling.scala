@@ -34,4 +34,10 @@ object DatesHandling {
     timeFromBeginning / (24 * 60 * 60 * 1000)
   }
 
+  def getLastDaysRange(n: Int): Seq[Date] = {
+    val today = new Date()
+    val downloadFromDate = addDaysToDate(today, n)
+    getDatesRange(downloadFromDate, today)
+  }
+
 }

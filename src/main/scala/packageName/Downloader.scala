@@ -24,4 +24,5 @@ object Downloader {
     createDirIfNotExists(folderPath)
     writeToFile(folderPath + "/" + fileName + ".html", page.toString)
   }
+
 }

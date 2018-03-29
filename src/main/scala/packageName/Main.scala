@@ -1,11 +1,5 @@
 package packageName
 
-import java.util.Date
-
-import packageName.Parser._
-import packageName.Downloader._
-import packageName.DatesHandling._
-
 object Main extends App {
 
   override def main(args: Array[String]): Unit = {
@@ -15,15 +9,16 @@ object Main extends App {
     }
 
     val outFolderPath = args(0)
-    val tagsUrls = getTagsUrls.take(5)
+    val tagsUrls = Parser.getTagsUrls.take(3)
 
-    val today = new Date()
-    val downloadFromDate = addDaysToDate(today, -5)
-    val rangeOfDatesToDownload = getDatesRange(downloadFromDate, today)
+    val lastDates = DatesHandling.getLastDaysRange(5)
 
-    val urlToDownload: List[Seq[String]] = tagsUrls.map(getTagUrlMostPopular)
-      .map { x => rangeOfDatesToDownload.map(getTagUrlByDate(x, _)) }
+    val urlsToDownload: List[String] = tagsUrls.map(Parser.getTagUrlMostPopular)
+      .flatMap { x => lastDates.map(Parser.getTagUrlByDate(x, _)) }
 
-    urlToDownload.foreach(_.par.foreach(downloadPageToFile(_, outFolderPath)))
+    urlsToDownload
+      .map(Downloader.getPage)
+      .flatMap(Parser.getPostsOnPage)
+      .foreach(_.saveToFolder(outFolderPath))
   }
 }

@@ -1,7 +1,7 @@
 package packageName
 
 import java.io._
-import java.nio.file.{Files, Paths}
+import java.nio.file._
 
 object FileHandling {
 
@@ -23,9 +23,28 @@ object FileHandling {
     try pw.write(data) finally pw.close()
   }
 
-  def createDirIfNotExists(path: String): Unit =
-    new File(path).mkdirs()
+  def createDirIfNotExists(path: String): Unit = new File(path).mkdirs()
 
-  def getFileNameWithoutExtension(file: File): String =
-    file.getName.takeWhile(_ != '.')
+  def getFileNameWithoutExtension(file: File): String = file.getName.takeWhile(_ != '.')
+
+  def getExtension(fileName: String): String = {
+    val lastIndexOfDot = fileName.lastIndexOf('.')
+    fileName.drop(lastIndexOfDot + 1)
+  }
+
+  def replaceAllIllegalFileNameChars(name: String): String = name.replaceAll("[^a-zA-Zа-яА-Я0-9\\-]", "_").replaceAll("_+", "_")
+
+  def saveDataToFile(inputStream: String, file: String): Long =
+    saveDataToFile(new ByteArrayInputStream(inputStream.getBytes()), file)
+
+  def saveDataToFile(inputStream: InputStream, file: String): Long =
+    saveDataToFile(inputStream, Paths.get(file))
+
+  def saveDataToFile(inputStream: InputStream, file: Path): Long = {
+    Files.copy(inputStream, file, StandardCopyOption.REPLACE_EXISTING)
+  }
+
+  private def createFileIfNotExists(file: File) = {
+
+  }
 }
