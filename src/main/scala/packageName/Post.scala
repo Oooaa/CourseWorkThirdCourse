@@ -86,8 +86,20 @@ class Post(item: Element) {
     }
   }
 
-  private def savePostInfo() = {
-    val infoData = Seq(id, rating, title, tags.mkString(", "), href).mkString("\n")
-    FileHandling.saveDataToFile(infoData, outputFolderPath + "/info.txt")
+  private def savePostInfo(): Unit = {
+    val infoFile = InfoFile(
+      href = href,
+      id = id,
+      title = title,
+      rating = rating,
+      tags = tags
+    )
+    val infoString = InfoFile.toJson(infoFile)
+    val outputFileName = outputFolderPath + '/' + InfoFile.FullName
+    FileHandling.writeToFile(
+      path = outputFileName,
+      data = infoString,
+      encoding = "UTF-8",
+      toPrint = false)
   }
 }

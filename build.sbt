@@ -15,3 +15,9 @@ libraryDependencies +=
 libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.2.3"
 
 libraryDependencies += "io.monix" %% "monix" % "2.3.0"
+
+libraryDependencies += "org.json4s" %% "json4s-jackson" % "3.2.11"
+
+libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.2.3"
+
+libraryDependencies += "com.typesafe.scala-logging" %% "scala-logging" % "3.8.0"

@@ -14,8 +14,9 @@ object FileHandling {
       fileTemp.delete()
   }
 
-  def writeToFile(path: String, data: String, encoding: String = "windows-1251"): Unit = {
-    println(path)
+  def writeToFile(path: String, data: String, encoding: String = "windows-1251", toPrint: Boolean = true): Unit = {
+    if (toPrint)
+      println(path)
     val pw: BufferedWriter = new BufferedWriter(
       new OutputStreamWriter(
         new FileOutputStream(path, true),
@@ -42,9 +43,5 @@ object FileHandling {
 
   def saveDataToFile(inputStream: InputStream, file: Path): Long = {
     Files.copy(inputStream, file, StandardCopyOption.REPLACE_EXISTING)
-  }
-
-  private def createFileIfNotExists(file: File) = {
-
   }
 }

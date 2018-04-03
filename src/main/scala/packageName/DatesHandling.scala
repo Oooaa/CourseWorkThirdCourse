@@ -1,16 +1,20 @@
 package packageName
 
-import java.util.Date
+import java.util.{Calendar, Date}
 
 import scala.collection.immutable
 
 object DatesHandling {
 
   def addDaysToDate(date: Date, daysCount: Int) = {
+    addToDate(date, daysCount, Calendar.DATE)
+  }
+
+  def addToDate(date: Date, howMuch: Int, whatUnit: Int) = {
     import java.util.Calendar
-    val c = Calendar.getInstance
+    val c = Calendar.getInstance()
     c.setTime(date)
-    c.add(Calendar.DATE, daysCount)
+    c.add(whatUnit, howMuch)
     c.getTime
   }
 
@@ -27,6 +31,15 @@ object DatesHandling {
     val max = if (isRightAfter) right else left
 
     generateDatesList(List.empty, min, max)
+  }
+
+  def generateRanges(howMuchRange: Int, oneRangeStep: Int, oneRangeUnit: Int): Seq[(Date, Date)] = {
+    val today = new Date()
+    (1 to howMuchRange)
+      .map(_ * oneRangeStep)
+      .map(x => addToDate(today, -x, oneRangeUnit))
+      .foldLeft(List.empty[(Date, Date)], today)({ case ((lst, lastDate), newDate) => (lst :+ (lastDate, newDate), newDate) })
+      ._1
   }
 
   def getDaysBetweenDate(leftDate: Date, rightDate: Date): Long = {

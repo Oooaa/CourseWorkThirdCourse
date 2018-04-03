@@ -27,10 +27,18 @@ object Parser {
     url + (if (url.contains('?')) "&" else "?") + s"$paramName=$paramValue"
 
 
+  val beginningDate = new Date(108, 0, 1)
+
   def getTagUrlByDate(mainUrl: String, date: Date): String = {
-    val beginningDate = new Date(108, 0, 1)
     val daysFromBeginning = DatesHandling.getDaysBetweenDate(beginningDate, date)
     addParamToUrl(mainUrl, "d", daysFromBeginning.toString)
+  }
+
+  def getTagUrlByDate(mainUrl: String, dates: (Date, Date)): String = {
+    val from = DatesHandling.getDaysBetweenDate(beginningDate, dates._1)
+    val until = DatesHandling.getDaysBetweenDate(beginningDate, dates._2)
+    val tmp = addParamToUrl(mainUrl, "d", from.toString)
+    addParamToUrl(tmp, "D", until.toString)
   }
 
   def getTagUrlMostPopular(url: String): String =
