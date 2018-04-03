@@ -1,7 +1,7 @@
 package packageName
 
 import java.io.{FileOutputStream, OutputStreamWriter}
-import java.nio.file.Paths
+import java.nio.file.{FileAlreadyExistsException, Paths}
 
 import org.jsoup.nodes.Element
 
@@ -61,13 +61,17 @@ class Post(item: Element) {
   private val storyBlocksContainer =
     item.getElementsByClass("story__content-inner").first()
 
-  val storyBlocks: Seq[PostBlock] = storyBlocksContainer.getElementsByClass("story-block").asScala.map(PostBlock)
+  val storyBlocks: Seq[PostBlock] = storyBlocksContainer
+    .getElementsByClass("story-block")
+    .asScala
+    .map(x => Try(PostBlock(x)))
+    .filter(_.isSuccess)
+    .map(_.get)
 
 
   val tags: Seq[String] = item.getElementsByClass("tags__tag").asScala.map(_.text().trim)
 
-  private var outputFolderPath: String =
-    ""
+  private var outputFolderPath: String = ""
 
   def saveToFolder(parentFolder: String): Unit = {
     import FileHandling._
@@ -76,12 +80,14 @@ class Post(item: Element) {
     createDirIfNotExists(outputFolderPath)
     savePostInfo()
     storyBlocks.zipWithIndex.foreach { case (block, index) =>
-      block.saveToFolder(outputFolderPath + f"/content_$index%02d")
+      Try(block.saveToFolder(outputFolderPath + f"/content_$index%02d")) recover {
+        case ex: FileAlreadyExistsException =>
+      }
     }
   }
 
   private def savePostInfo() = {
-    val infoData = Seq(id, rating, title, tags.mkString(", ")).mkString("\n")
+    val infoData = Seq(id, rating, title, tags.mkString(", "), href).mkString("\n")
     FileHandling.saveDataToFile(infoData, outputFolderPath + "/info.txt")
   }
 }

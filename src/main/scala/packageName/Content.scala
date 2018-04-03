@@ -1,7 +1,6 @@
 package packageName
 
 import java.io.{ByteArrayInputStream, InputStream}
-import java.nio.file.{Files, Paths}
 
 import org.jsoup.nodes.Element
 
@@ -20,7 +19,7 @@ object Content {
   def apply(block: PostBlock): Content = block.type_ match {
     case PostBlockType.Image => new ImageContent(block.item)
     case PostBlockType.Text => new TextContent(block.item)
-    case PostBlockType.Gif =>  new ImageContent(block.item) //throw new NotImplementedError()
+    case PostBlockType.Gif => new ImageContent(block.item) //throw new NotImplementedError()
     case _ => throw new MatchError(s"Type '${block.typeName}' does not expected")
   }
 }

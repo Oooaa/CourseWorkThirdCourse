@@ -37,10 +37,13 @@ object Parser {
     addParamToUrl(url, "st", "2")
 
   def getPostsOnPage(page: Document): Seq[Post] =
-    page.getElementsByClass("story").asScala.map(x => Try(Post(x))).filter(x => {
-      if (x.isFailure)
-        println(page.baseUri() + "\n" + x.toString + "\n\n")
-      x.isSuccess
-    }).map(_.get)
+    page.select("article[data-rating]")
+      .asScala
+      .map(x => Try(Post(x)))
+      .filter(x => {
+        if (x.isFailure)
+          println(page.baseUri() + "\n" + x.toString + "\n\n")
+        x.isSuccess
+      }).map(_.get)
 }
 
