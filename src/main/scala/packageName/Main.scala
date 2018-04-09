@@ -2,7 +2,6 @@ package packageName
 
 import java.util.Calendar
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Future}
 
@@ -27,8 +26,15 @@ object Main extends App {
     val downloadedPostIds = DownloadedPostHandler(outFolderPath).postsId
 
     val futures = urlsToDownload
+        .view
       .map(x => Future(Downloader.getPage(x)))
       .map(_.map(Parser.getPostsOnPage))
+      .map(_.map { seqOfIds =>
+        val setOfIds: Set[Int] = seqOfIds.map(_.id).toSet
+        val alreadyDownloaded = setOfIds & downloadedPostIds
+        log.info(s"Already downloaded posts ids: ${alreadyDownloaded.mkString(", ")}")
+        seqOfIds.filterNot(x => downloadedPostIds.contains(x.id))
+      })
       .map(_.map(_.map(_.saveToFolder(outFolderPath))))
 
     Await.result(Future.sequence(futures), Duration.Inf)

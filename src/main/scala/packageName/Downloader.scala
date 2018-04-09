@@ -9,8 +9,10 @@ import packageName.FileHandling.{createDirIfNotExists, writeToFile}
 
 
 object Downloader {
-  def getImageStream(imageUrl: String): InputStream =
+  def getImageStream(imageUrl: String): InputStream = {
+    log.info(s"Open image stream: $imageUrl")
     new URL(imageUrl).openStream()
+  }
 
 
   def getPage(url: String): Document = {

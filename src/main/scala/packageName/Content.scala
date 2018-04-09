@@ -3,6 +3,7 @@ package packageName
 import java.io.{ByteArrayInputStream, InputStream}
 
 import org.jsoup.nodes.Element
+import scala.collection.JavaConverters._
 
 abstract class Content protected(contentContainerBlock: Element) {
   val outputFileExtension: String
@@ -16,12 +17,14 @@ abstract class Content protected(contentContainerBlock: Element) {
 }
 
 object Content {
-  def apply(block: PostBlock): Content = block.type_ match {
-    case PostBlockType.Image => new ImageContent(block.item)
-    case PostBlockType.Text => new TextContent(block.item)
-    case PostBlockType.Gif => new ImageContent(block.item) //throw new NotImplementedError()
-    case _ => throw new MatchError(s"Type '${block.typeName}' does not expected")
-  }
+  def apply(item: Element): Content =
+    item.classNames().asScala.collectFirst {
+      case "story-block_type_image" => new ImageContent(item)
+      case "story-block_type_text" => new TextContent(item)
+    }.getOrElse{
+      log.info(s"Not found known class in ${item.classNames()}")
+      new NonParsableContent(null)
+    }
 }
 
 class TextContent(contentContainerBlock: Element) extends Content(contentContainerBlock) {
@@ -36,4 +39,10 @@ class ImageContent(contentContainerBlock: Element) extends Content(contentContai
 
   override val outputFileExtension: String = FileHandling.getExtension(imageUrl)
   override lazy val value: InputStream = Downloader.getImageStream(imageUrl)
+}
+
+class NonParsableContent(contentContainerBlock: Element) extends Content(contentContainerBlock) {
+  override val outputFileExtension = "unknown"
+
+  override lazy val value: Null = null
 }

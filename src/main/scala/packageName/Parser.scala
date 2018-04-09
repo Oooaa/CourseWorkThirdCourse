@@ -50,7 +50,7 @@ object Parser {
       .map(x => Try(Post(x)))
       .filter(x => {
         if (x.isFailure)
-          println(page.baseUri() + "\n" + x.toString + "\n\n")
+          log.warn("Failed while parsing " + page.baseUri() + "\n" + x.toString + "\n\n")
         x.isSuccess
       }).map(_.get)
 }
