@@ -15,7 +15,7 @@ object Main extends App {
     val toDownloadTopTagsCount = args(1).toInt
     val howMuchRanges = args(2).toInt
     val oneRangeAmount = args(3).toInt
-    val oneRangeUnit = Calendar.MONTH
+    val oneRangeUnit = Calendar.DATE
 
     val tagsUrls = Parser.getTagsUrls.take(toDownloadTopTagsCount)
     val lastDates = DatesHandling.generateRanges(howMuchRanges, oneRangeAmount, oneRangeUnit)
